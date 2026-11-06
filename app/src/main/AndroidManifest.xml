@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".YChatApp"
         android:label="YChat"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
@@ -14,6 +15,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ChatListActivity" android:exported="false" />
+        <activity android:name=".ConversationActivity" android:exported="false" />
+        <activity android:name=".InviteActivity" android:exported="false" />
+        <activity android:name=".ProfileSetupActivity" android:exported="false" />
     </application>
 
 </manifest>
