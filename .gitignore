@@ -11,3 +11,5 @@ local.properties
 
 # Fichiers d'environnement (placeholders + .env gitignoré uniquement)
 .env
+app/.cxx/
+app/build/
