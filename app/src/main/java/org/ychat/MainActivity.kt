@@ -1,32 +1,24 @@
 package org.ychat
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 
+/**
+ * Aiguillage : sans profil -> [ProfileSetupActivity], sinon [ChatListActivity].
+ * (Modifie a minima : la mission impose la redirection ; aucun R.*, aucun layout.)
+ */
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val layout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
+        val repo = (application as YChatApp).repository
+        val next = if (repo.hasProfile()) {
+            Intent(this, ChatListActivity::class.java)
+        } else {
+            Intent(this, ProfileSetupActivity::class.java)
         }
-        val title = TextView(this).apply {
-            text = "YChat"
-            textSize = 32f
-            gravity = Gravity.CENTER
-        }
-        val backendStatus = TextView(this).apply {
-            text = "Backend SimpleX : non connecté"
-            textSize = 16f
-            gravity = Gravity.CENTER
-        }
-        layout.addView(title)
-        layout.addView(backendStatus)
-        setContentView(layout)
+        startActivity(next)
+        finish()
     }
 }
