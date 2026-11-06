@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YChat original resource (GPL-3.0). Created from scratch. No third-party code copied. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ychat_bg">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ychat_chat_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="88dp"
+        android:scrollbars="vertical" />
+
+    <TextView
+        android:id="@+id/ychat_chat_list_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/xChatsEmpty"
+        android:textColor="@color/ychat_text_secondary"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+    <!-- FAB (ImageButton, no Material dependency needed) -->
+    <ImageButton
+        android:id="@+id/ychat_fab_new_chat"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:background="@drawable/ychat_bg_avatar_circle"
+        android:contentDescription="@string/xChatsNewChat"
+        android:padding="16dp"
+        android:src="@drawable/ychat_ic_attach_24" />
+
+</FrameLayout>

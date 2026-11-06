@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YChat original resource (GPL-3.0). Telegram-style teal UI, created from scratch. No third-party code copied. -->
+<resources>
+    <style name="Theme.YChat" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/ychat_teal</item>
+        <item name="android:colorPrimaryDark">@color/ychat_teal_dark</item>
+        <item name="android:colorAccent">@color/ychat_accent</item>
+        <item name="android:windowBackground">@color/ychat_bg</item>
+        <item name="android:textColorPrimary">@color/ychat_text_primary</item>
+        <item name="android:textColorSecondary">@color/ychat_text_secondary</item>
+        <item name="android:editTextBackground">@drawable/ychat_bg_input_bar</item>
+        <item name="android:textCursorDrawable">@drawable/ychat_cursor_blue</item>
+    </style>
+
+    <style name="Theme.YChat.Night" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorPrimary">@color/ychat_teal</item>
+        <item name="android:colorPrimaryDark">@color/ychat_teal_dark</item>
+        <item name="android:colorAccent">@color/ychat_accent</item>
+        <item name="android:windowBackground">@color/ychat_bg</item>
+        <item name="android:textColorPrimary">@color/ychat_text_primary</item>
+        <item name="android:textColorSecondary">@color/ychat_text_secondary</item>
+        <item name="android:editTextBackground">@drawable/ychat_bg_input_bar</item>
+        <item name="android:textCursorDrawable">@drawable/ychat_cursor_blue</item>
+    </style>
+</resources>

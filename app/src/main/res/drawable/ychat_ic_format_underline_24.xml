@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YChat original resource (GPL-3.0). Telegram-style teal UI, created from scratch. No third-party code copied. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M5,4v7c0,3.9 3.1,7 7,7s7,-3.1 7,-7V4h-3v7c0,2.2 -1.8,4 -4,4s-4,-1.8 -4,-4V4zM3,20h18v2H3z" />
+</vector>
