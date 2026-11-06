@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
  *
  * - Expose un [CoroutineScope] application ([appScope]) pour les taches de fond
  *   (init JNI, boucle de reception future).
- * - Initialise le RTS Haskell hors main thread via [SimplexJni.ensureInitIo]
+ * - Au demarrage : init RTS Haskell puis creation du controller reel via
+ *   [ChatInit.ensureBackend] (chat_migrate_init upstream : DB dans filesDir
+ *   + mot de passe), stocke dans [ChatRepository.controller]
  *   (SPEC docs/SPEC.md sections 1.2 et 5 : init unique par processus,
  *   jamais sur le main thread).
  * - Expose le [ChatRepository] partage (etat memoire + SharedPreferences).
@@ -34,14 +36,17 @@ class YChatApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // Init RTS Haskell en tache de fond : bloquant, interdit sur le main thread.
-        // Echec tolere (backend indisponible) : l'UI locale reste utilisable.
+        // Init RTS Haskell + controller en tache de fond (bloquant JNI,
+        // interdit sur le main thread). Echec tolere (controller 0L) : les
+        // commandes supportees echouent explicitement, cf. ChatRepository.
         appScope.launch(Dispatchers.IO) {
             try {
                 SimplexJni.ensureInitIo()
                 Log.i(TAG, "SimplexJni init OK")
+                val ctrl = ChatInit.ensureBackend(repository)
+                Log.i(TAG, "ChatInit controller=$ctrl")
             } catch (e: Exception) {
-                Log.w(TAG, "SimplexJni init echec (mode local seul) : ${e.message}")
+                Log.w(TAG, "ChatInit echec (controller 0L) : ${e.message}")
             }
         }
     }

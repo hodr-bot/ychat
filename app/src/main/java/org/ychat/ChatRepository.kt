@@ -27,11 +27,10 @@ import java.util.concurrent.atomic.AtomicLong
  * - adresse permanente locale (generee une fois, stockee).
  *
  * Backend : [SimplexJni.sendCmd] sur Dispatchers.IO (pattern SimpleXAPI.sendCmd).
- * NOTE : ce worktree expose un SimplexJni SANS `chatMigrateInit`/`chatCloseStore`
- * (sous-ensemble v0 : initHS + send/recv + parse). Faute de controller reel,
- * [controller] vaut 0L : les envois tentent le JNI puis replient en local-echo
- * (message persiste, marque non envoye). Brancher le vrai controller des que le
- * thread JNI exposera migrateInit (non-fait explicite, voir .worker-report.md).
+ * Le [controller] reel est cree au demarrage par [ChatInit.ensureBackend]
+ * (`chatMigrateInit` upstream, DB dans filesDir + mot de passe) ; tant qu'il
+ * vaut 0L, les commandes supportees echouent explicitement au lieu du
+ * local-echo silencieux (fini le 0L + local-echo pour les commandes supportees).
  */
 class ChatRepository private constructor(context: Context) {
 
@@ -39,9 +38,16 @@ class ChatRepository private constructor(context: Context) {
     private val prefs: SharedPreferences =
         appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    /** Handle backend. 0L = non connecte (repli local). Voir KDoc classe. */
+    /**
+     * Handle backend. 0L = non connecte (init en cours ou migration echouee).
+     * Ecrit par [ChatInit.ensureBackend] (YChatApp au demarrage), lu par les
+     * commandes supportees ([sendMessage], [parseInviteLink]). Voir KDoc classe.
+     */
     @Volatile
     var controller: Long = 0L
+
+    /** Contexte application (pour [ChatInit] : filesDir + SharedPreferences). */
+    fun appCtx(): Context = appContext
 
     private val lock = Any()
     private val contacts: MutableMap<String, ChatContact> = LinkedHashMap()
@@ -142,32 +148,30 @@ class ChatRepository private constructor(context: Context) {
     /**
      * Envoi via SimplexJni (NOTE mission : "SimplexJni.send" ; l'API reelle expose
      * [SimplexJni.sendCmd] — ecart de nommage consigne dans .worker-report.md).
-     * Le message est TOUJOURS persiste en local ; `sent=true` si le backend a
-     * repondu sans erreur.
+     * Commande supportee : exige le controller reel ; sans controller (0L),
+     * echoue explicitement (IllegalStateException) au lieu du local-echo
+     * silencieux. Le message n'est persiste qu'apres reponse backend OK.
      */
     suspend fun sendMessage(contactId: String, text: String): SendResult =
         withContext(Dispatchers.IO) {
             val trimmed = text.trim()
             require(trimmed.isNotEmpty()) { "texte vide" }
-            var sent = false
-            var backendReply: String? = null
             val ctrl = controller
-            if (ctrl != 0L) {
-                try {
-                    SimplexJni.ensureInit()
-                    // Format minimal v0 (SPEC 1.3 : chaine de commande texte).
-                    // A aligner sur CC.cmdString upstream quand le backend reel est branche.
-                    val cmd = "/_send $contactId $trimmed"
-                    backendReply = SimplexJni.sendCmd(ctrl, cmd)
-                    sent = isOkResponse(backendReply)
-                } catch (e: Exception) {
-                    Log.w(TAG, "send via backend echec, repli local : ${e.message}")
-                }
-            } else {
-                Log.i(TAG, "pas de controller (0L) : message garde en local")
+            if (ctrl == 0L) {
+                throw IllegalStateException("backend non initialise (controller 0L)")
+            }
+            // Format minimal v0 (SPEC 1.3 : chaine de commande texte).
+            // A aligner sur CC.cmdString upstream quand le backend reel est branche.
+            val cmd = "/_send $contactId $trimmed"
+            val backendReply = SimplexJni.sendCmd(ctrl, cmd)
+            val sent = isOkResponse(backendReply)
+            // Echec backend explicite : rien n'est persiste en local.
+            if (!sent) {
+                Log.w(TAG, "send refuse par le backend : $backendReply")
+                throw IllegalStateException("backend a refuse l'envoi : $backendReply")
             }
             val msg = storeLocal(contactId, trimmed, outgoing = true)
-            SendResult(message = msg, sent = sent, backendReply = backendReply)
+            SendResult(message = msg, sent = true, backendReply = backendReply)
         }
 
     /** Reponse backend consideree OK si JSON sans marqueur d'erreur explicite. */
@@ -199,12 +203,17 @@ class ChatRepository private constructor(context: Context) {
 
     /**
      * Valide un lien colle via chatParseUri (safe=1), hors main thread.
-     * Retourne le lien tel quel si le backend est indisponible (0L).
+     * Commande supportee : exige le controller reel ; sans controller (0L),
+     * retourne null (lien non valide) au lieu d'accepter le lien en aveugle.
      */
     suspend fun parseInviteLink(link: String): String? = withContext(Dispatchers.IO) {
         val trimmed = link.trim()
         if (trimmed.isEmpty()) return@withContext null
-        if (controller == 0L) return@withContext trimmed
+        val ctrl = controller
+        if (ctrl == 0L) {
+            Log.w(TAG, "parseInviteLink sans controller : lien refuse")
+            return@withContext null
+        }
         try {
             SimplexJni.ensureInit()
             SimplexJni.chatParseUri(trimmed, 1)

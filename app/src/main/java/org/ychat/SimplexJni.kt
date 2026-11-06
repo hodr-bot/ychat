@@ -12,7 +12,10 @@ import kotlinx.coroutines.withContext
  * apps/multiplatform/common/src/commonMain/cpp/android/simplex-api.c.
  *
  * SPEC : docs/SPEC.md section 1.2 (sous-ensemble v0 : initHS +
- * chatSendCmdRetry / chatRecvMsgWait / chatParseServer / chatParseUri).
+ * chatMigrateInit / chatSendCmdRetry / chatRecvMsgWait / chatParseServer /
+ * chatParseUri). Creation du controller via [chatMigrateInit], copie du
+ * pattern upstream Core.kt (chatMigrateInit(dbPath, dbKey, confirm) :
+ * Array<Any> = [JSON DBMigrationResult, Long ctrl]).
  * Pattern d'appel upstream : Core.kt (declarations `external fun`) +
  * SimpleXAPI.kt sendCmd (withContext(Dispatchers.IO) + chatSendCmdRetry) /
  * recvMsg (chatRecvMsgWait + "" => null) + MESSAGE_TIMEOUT.
@@ -31,6 +34,17 @@ object SimplexJni {
     init {
         System.loadLibrary("ychat-bridge")
     }
+
+    /**
+     * Creation/migration DB + controller (upstream Core.kt `chatMigrateInit`,
+     * pont C `Java_org_ychat_SimplexJni_chatMigrateInit` ->
+     * `chat_migrate_init(path, key, confirm, &ctrl)`).
+     * @return Array<Any> = [String JSON DBMigrationResult, Long ctrl]
+     *   (ctrl = 0L si la migration a echoue, comme l'upstream qui ne lit
+     *   `migrated[1]` que si `res is DBMigrationResult.OK`).
+     */
+    @JvmStatic
+    external fun chatMigrateInit(dbPath: String, dbKey: String, confirm: String): Array<Any>
 
     /** RTS Haskell : hs_init_with_rtsopts + setLineBuffering, sans argument. */
     @JvmStatic
@@ -79,6 +93,21 @@ object SimplexJni {
         withContext(Dispatchers.IO) {
             ensureInit()
         }
+    }
+
+    /**
+     * Creation du controller sur Dispatchers.IO (pattern upstream
+     * Core.kt `initChatController` : ensureInit puis chatMigrateInit).
+     * @return Pair(migrationJson, ctrl) ; ctrl = 0L si migration non-OK.
+     */
+    suspend fun migrateInit(
+        dbPath: String,
+        dbKey: String,
+        confirm: String = ChatInit.CONFIRM_ERROR,
+    ): Pair<String, Long> = withContext(Dispatchers.IO) {
+        ensureInit()
+        val migrated = chatMigrateInit(dbPath, dbKey, confirm)
+        Pair(migrated[0] as String, migrated[1] as Long)
     }
 
     /**
