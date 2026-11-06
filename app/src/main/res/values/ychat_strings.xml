@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YChat original resource (GPL-3.0). Telegram-style teal UI, created from scratch. No third-party code copied. -->
+<resources>
+    <!-- Chat list / content -->
+    <string name="ChatContentTitle">Chats</string>
+    <string name="ChatContentEmpty">No chats yet</string>
+    <string name="ChatContentSearch">Search</string>
+    <string name="xChatsTitle">Chats</string>
+    <string name="xChatsEmpty">No conversations yet.\nInvite a contact to start chatting.</string>
+    <string name="xChatsNewChat">New chat</string>
+    <string name="NewMessages">New messages</string>
+    <string name="SelectChat">Select a chat</string>
+    <!-- Conversation -->
+    <string name="MessageReply">Reply</string>
+    <string name="DeleteMessage">Delete message</string>
+    <string name="MessageInputHint">Message</string>
+    <string name="MessageSend">Send</string>
+    <string name="MessageDeleteConfirm">Delete this message?</string>
+    <string name="MessageDeleted">Message deleted</string>
+    <!-- Text formatting (menu ychat_text.xml) -->
+    <string name="TextFormatClear">Clear formatting</string>
+    <string name="TextFormatBold">Bold</string>
+    <string name="TextFormatItalic">Italic</string>
+    <string name="TextFormatUnderline">Underline</string>
+    <string name="TextFormatStrikethrough">Strikethrough</string>
+    <string name="TextFormatMonospace">Monospace</string>
+    <string name="TextFormatSpoiler">Spoiler</string>
+    <string name="TextFormatLink">Link</string>
+    <string name="TextFormatQuote">Quote</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YChat original resource (GPL-3.0). Telegram-style teal UI, created from scratch. No third-party code copied. -->
+<resources>
+    <!-- Telegram-style teal palette, jour -->
+    <color name="ychat_teal">#FF0088CC</color>
+    <color name="ychat_teal_light">#FF229ED9</color>
+    <color name="ychat_teal_dark">#FF006699</color>
+    <color name="ychat_accent">#FF229ED9</color>
+    <color name="ychat_bg">#FFF2F6FA</color>
+    <color name="ychat_surface">#FFFFFFFF</color>
+    <color name="ychat_text_primary">#FF222222</color>
+    <color name="ychat_text_secondary">#FF707579</color>
+    <color name="ychat_tick">#FF229ED9</color>
+    <color name="ychat_bubble_in">#FFFFFFFF</color>
+    <color name="ychat_bubble_out">#FFE1F5C8</color>
+    <color name="ychat_input_bg">#FFFFFFFF</color>
+    <color name="ychat_divider">#FFE0E0E0</color>
+</resources>
