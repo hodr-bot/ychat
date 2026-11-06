@@ -1,0 +1,13 @@
+# Gradle / Android
+build/
+.gradle/
+local.properties
+
+# Worktrees (single-writer via flock, gérés par le conducteur)
+.worktrees/
+
+# Bibliothèques natives extraites (jamais commitées)
+*.so
+
+# Fichiers d'environnement (placeholders + .env gitignoré uniquement)
+.env
