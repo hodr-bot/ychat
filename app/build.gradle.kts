@@ -50,5 +50,7 @@ android {
 
 dependencies {
     implementation("androidx.activity:activity:1.9.2")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }
