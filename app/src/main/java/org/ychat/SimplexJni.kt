@@ -1,6 +1,7 @@
 package org.ychat
 
 import kotlin.jvm.JvmStatic
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -104,7 +105,7 @@ object SimplexJni {
      * (Dispatchers.IO) et delivre chaque JSON non-vide a onMessage.
      * Sortie uniquement par annulation de la coroutine parente.
      */
-    suspend fun receiveLoop(
+    suspend fun CoroutineScope.receiveLoop(
         controller: Long,
         timeout: Int = MESSAGE_TIMEOUT,
         onMessage: suspend (String) -> Unit,

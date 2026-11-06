@@ -6,6 +6,14 @@ plugins {
 android {
     namespace = "org.ychat"
     compileSdk = 34
+    ndkVersion = "27.0.12077973"
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
 
     defaultConfig {
         applicationId = "org.ychat"
@@ -15,6 +23,9 @@ android {
         versionName = "0.1"
         vectorDrawables {
             useSupportLibrary = true
+        }
+        ndk {
+            abiFilters += listOf("arm64-v8a")
         }
     }
 
@@ -39,4 +50,5 @@ android {
 
 dependencies {
     implementation("androidx.activity:activity:1.9.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }
